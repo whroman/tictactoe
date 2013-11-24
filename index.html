@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Walter Roman LocBox Challenge</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="board"></div>
+
+    <div id="info">
+        <div class="player">
+            <div class="tile one faux"></div>
+            <div>Player One</div>
+        </div>
+        <div class="player">
+            <div class="tile two faux"></div>
+            <div>Player Two</div>
+        </div>
+    </div>
+    <div id="overlay-bg"></div>
+    <div class="message">
+
+</body>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="underscore.js"></script>
+<script type="text/javascript" src="backbone.js"></script>
+<script type="text/javascript" src="backbone-localStorage.js"></script>
+<script type="text/javascript" src="app.js"></script>
+
+<script type="text/template" id="tile-template">
+        <div id='tile<%-x%><%-y%>' class="tile<%- x == 0 ? ' nth-tile' : "" %>" ></div>
+</script>
+
+</html>
+ 
