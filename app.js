@@ -21,7 +21,7 @@ $(function() {
 		model: Tile,
 		localStorage: new Backbone.LocalStorage("minesweeper"),
 		numOfClicks: 0,
-		boardSize: 0,
+		boardSize: null,
 		possibleWins: [],
 		nextOrder: function() {
 			if (!this.length) return 1;
@@ -85,6 +85,17 @@ $(function() {
 		selectedTiles: function(tile) {
 			return this.where({"selectedBy": tile.get("selectedBy")})
 		},
+		checkGameState: function(tile) {
+			var numSelectedTiles = Tiles.where({
+				"hasBeenSelected": true
+			}).length
+			console.log(numSelectedTiles, Tiles.boardSize, Tiles.numOfClicks)
+			if (numSelectedTiles == Tiles.boardSize * Tiles.boardSize) {
+				tile.trigger("tie");
+			} else {
+				Tiles.checkWin(tile);
+			}
+		},
 		checkWin: function(tile) {
 			var playerTiles = Tiles.selectedTiles(tile),
 				possibleWins = Tiles.possibleWins,
@@ -94,7 +105,7 @@ $(function() {
 					x: playerTiles[i].get("x"),
 					y: playerTiles[i].get("y")					
 				});
-			}
+			};
 			for (var i = 0; i < possibleWins.length; i++) {
 				var count = 0;
 				for (var j = 0; j < possibleWins[i].length; j++) {
@@ -106,7 +117,8 @@ $(function() {
 					};
 				};
 				if (count == Tiles.boardSize) {
-					this.model.win();
+					console.log(this)
+					tile.win();
 				};
 			};
 		},
@@ -122,7 +134,7 @@ $(function() {
 		},
 		initialize: function() {
 			this.listenTo(this.model, "change:selectedBy", this.markTile);
-			this.listenTo(this.model, "change:hasBeenSelected", Tiles.checkWin);
+			this.listenTo(this.model, "change:hasBeenSelected", Tiles.checkGameState);
 		},
 		render: function() {
 			return this.template(this.model.toJSON())
@@ -153,6 +165,7 @@ $(function() {
 		    Tiles.newGame(options.size);
 		    _.each(Tiles.models, this.add_tile, this);
 			this.listenTo(Tiles, "win", this.win);
+			this.listenTo(Tiles, "tie", this.tie);
 		},
 		add_tile: function(tile) {
 			var el_string = "#tile" + tile.get("x") + tile.get("y");
@@ -166,6 +179,10 @@ $(function() {
 			player = (tile.get("selectedBy") == 0) ? "One" : "Two";
 			$("#overlay-bg").addClass("show");			
 			$(".message").addClass("show").html("Player " + player + " wins!");
+		},
+		tie: function() {
+			$("#overlay-bg").addClass("show");			
+			$(".message").addClass("show").html("It's a tie!");
 		}
 	});
 	
