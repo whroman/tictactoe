@@ -77,6 +77,7 @@ $(function() {
 				bottomLeftTopRight.push({
 					x: size,
 					y: this.boardSize - 1 - size
+			
 				});
 			};
 			this.possibleWins.push(topLeftBottomRight);
@@ -88,13 +89,12 @@ $(function() {
 		checkGameState: function(tile) {
 			var numSelectedTiles = Tiles.where({
 				"hasBeenSelected": true
-			}).length
-			console.log(numSelectedTiles, Tiles.boardSize, Tiles.numOfClicks)
+			}).length;
 			if (numSelectedTiles == Tiles.boardSize * Tiles.boardSize) {
 				tile.trigger("tie");
 			} else {
 				Tiles.checkWin(tile);
-			}
+			};
 		},
 		checkWin: function(tile) {
 			var playerTiles = Tiles.selectedTiles(tile),
@@ -117,10 +117,14 @@ $(function() {
 					};
 				};
 				if (count == Tiles.boardSize) {
-					console.log(this)
 					tile.win();
 				};
 			};
+		},
+		endOfGame: function() {
+			_.each(this.models, function(tile) {
+				tile.set("hasBeenSelected", true)
+			})
 		},
 		comparator: "order",
 	});
@@ -140,7 +144,7 @@ $(function() {
 			return this.template(this.model.toJSON())
 		},
 		tileClick: function() {
-			if (!this.model.get("hasBeenSelected")) {
+			if (this.model.get("hasBeenSelected") == false) {
 				var player = Tiles.numOfClicks % 2;
 				this.model.set("selectedBy", player);
 				this.model.set("hasBeenSelected", true);
@@ -150,8 +154,12 @@ $(function() {
 		markTile: function() {
 			var player = this.model.get("selectedBy");
 			if (player == 0) {
+				$(".player.one .tile").removeClass("one")
+				$(".player.two .tile").addClass("two");
 				this.$el.addClass("one");
 			} else {
+				$(".player.one .tile").addClass("one")
+				$(".player.two .tile").removeClass("two");
 				this.$el.addClass("two");
 			}
 		},
@@ -162,10 +170,25 @@ $(function() {
 		el: $("#board"),
 
 		initialize: function(options) {
-		    Tiles.newGame(options.size);
-		    _.each(Tiles.models, this.add_tile, this);
+			var thisView = this;
+			this.render([], options.size);
 			this.listenTo(Tiles, "win", this.win);
 			this.listenTo(Tiles, "tie", this.tie);
+			this.listenTo(Tiles, "reset", this.render);
+			$("#overlay-bg").on("click", function() {
+				$(this).removeClass("show");
+				$("#message").removeClass("show");
+			});
+			$("#message .new-game").on("click", function() {
+				$("#overlay-bg").removeClass("show");
+				$("#message").removeClass("show");
+				Tiles.reset([], 3);
+			})
+		},
+		render: function(collection, size) {
+			this.$el.empty();			
+		    Tiles.newGame(size);
+		    _.each(Tiles.models, this.add_tile, this);
 		},
 		add_tile: function(tile) {
 			var el_string = "#tile" + tile.get("x") + tile.get("y");
@@ -176,13 +199,17 @@ $(function() {
 			new_tile_view.setElement(el_string);
 		},
 		win: function(tile) {
-			player = (tile.get("selectedBy") == 0) ? "One" : "Two";
-			$("#overlay-bg").addClass("show");			
-			$(".message").addClass("show").html("Player " + player + " wins!");
+			Tiles.endOfGame();
+			player = (tile.get("selectedBy") == 0) ? "Green" : "Orange";
+			this.displayOverlay(player + " wins!");
 		},
 		tie: function() {
+			this.displayOverlay("It's a tie!");
+		},
+		displayOverlay: function(text) {
 			$("#overlay-bg").addClass("show");			
-			$(".message").addClass("show").html("It's a tie!");
+			$("#message").addClass("show");
+			$("#message .title").html(text);
 		}
 	});
 	
@@ -190,5 +217,5 @@ $(function() {
 
 	var App = new Board_View({
 		size : size
-	});
+	});		
 });

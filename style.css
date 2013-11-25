@@ -34,20 +34,22 @@ body > * {
 	background-color: #FF8822;
 }
 
-.tile.one.faux {
+.tile.faux {
 	width: 45px;
 	height: 45px;
-	background-color: #21D330;
 }
 
-.tile.two.faux {
+.tile.faux {
 	width: 45px;
 	height: 45px;
-	background-color: #FF8822;
 }
 
 .tile:hover {
 	border-color: #444;
+}
+
+.tile.faux:hover {
+	cursor: default;
 }
 
 .nth-tile {
@@ -66,10 +68,9 @@ body > * {
 	text-align: center;
 }
 
-.player * {
-	display: inline-block;
+.player .name {
+	line-height: 80px;
 }
-
 
 #overlay-bg {
 	position: fixed;
@@ -87,11 +88,10 @@ body > * {
 	display: inline-block;
 }
 
-.message {
+#message {
 	color: #000;
 	background-color: #FFF;
 	border-radius: 16px;
-	display: inline-block;
 	padding: 8px 18px;
 	font-weight: 200;
 	top: 12%;
@@ -103,11 +103,39 @@ body > * {
 	margin-left: -218px;
 }
 
-.message.show {
+#message.show {
 	display: inline-block;
 }
 
-.message > * {
+#message .title {
 	line-height: 1.5em;
-	font-size: 18px;
+	font-size: 40px;
+}
+
+#message .new-game {
+	display: inline-block;
+	cursor: pointer;
+}
+
+#message .text {
+	display: inline-block;
+	line-height: 80px;
+	font-size: 32px;
+	color: #999
+}
+
+.button.tile {
+	width: 45px;
+	height: 45px;
+	color: #FFF;
+	text-align: center;
+	line-height: 45px;
+	font-size: 40px;
+	font-weight: 500;
+	display: inline-block;
+}
+
+#message .new-game:hover * {
+	color: #444;
+	border-color: #444;
 }
