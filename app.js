@@ -1,9 +1,9 @@
 $(function() {
 	var Tile = Backbone.Model.extend({
 		defaults: function() {
-			var order = Tiles.nextOrder();
+			var order = Tiles.nextId();
 			return {
-				order: order,
+				id: order,
 				hasBeenSelected: false,
 				selectedBy: ""
 			};
@@ -11,21 +11,19 @@ $(function() {
 
 		x : "",
 		y : "",
-		win: function() {
-			this.trigger("win", this)
-		}
 
 	});
 
 	var All_Tiles = Backbone.Collection.extend({
 		model: Tile,
-		localStorage: new Backbone.LocalStorage("minesweeper"),
+		localStorage: new Backbone.LocalStorage("tictactoe"),
 		numOfClicks: 0,
 		boardSize: null,
+		allowClicks: true,
 		possibleWins: [],
-		nextOrder: function() {
+		nextId: function() {
 			if (!this.length) return 1;
-			return this.last().get("order") + 1;
+			return this.last().get("id") + 1;
 		},
 		newGame: function(boardSize) {
 			this.boardSize = boardSize;
@@ -35,11 +33,12 @@ $(function() {
 						x: xx, 
 						y: yy, 
 					});
+					tile.save();
 				};
 			};
-			this.horizontalWins();
-			this.verticalWins();
-			this.crossWins();
+			this.horizontalWins()
+				.verticalWins()
+				.crossWins();
 		},
 		horizontalWins: function() {
 			for (var yy = 0; yy < this.boardSize; yy++) {
@@ -52,6 +51,7 @@ $(function() {
 				};
 				this.possibleWins.push(wins);
 			};
+			return this;
 		},
 		verticalWins: function() {
 			for (var xx = 0; xx < this.boardSize; xx++) {
@@ -64,6 +64,7 @@ $(function() {
 				};
 				this.possibleWins.push(wins);
 			};
+			return this;
 		},
 		crossWins: function() {
 			var topLeftBottomRight = [],
@@ -82,6 +83,7 @@ $(function() {
 			};
 			this.possibleWins.push(topLeftBottomRight);
 			this.possibleWins.push(bottomLeftTopRight);
+			return this;
 		},
 		selectedTiles: function(tile) {
 			return this.where({"selectedBy": tile.get("selectedBy")})
@@ -90,13 +92,12 @@ $(function() {
 			var numSelectedTiles = Tiles.where({
 				"hasBeenSelected": true
 			}).length;
+			Tiles.checkIfWin(tile);
 			if (numSelectedTiles == Tiles.boardSize * Tiles.boardSize) {
 				tile.trigger("tie");
-			} else {
-				Tiles.checkWin(tile);
 			};
 		},
-		checkWin: function(tile) {
+		checkIfWin: function(tile) {
 			var playerTiles = Tiles.selectedTiles(tile),
 				possibleWins = Tiles.possibleWins,
 				playerTileCoords = [];
@@ -117,16 +118,14 @@ $(function() {
 					};
 				};
 				if (count == Tiles.boardSize) {
-					tile.win();
+					tile.trigger("win", tile);
 				};
 			};
 		},
 		endOfGame: function() {
-			_.each(this.models, function(tile) {
-				tile.set("hasBeenSelected", true)
-			})
+			Tiles.allowClicks = false;
 		},
-		comparator: "order",
+		comparator: "id",
 	});
 
 	var Tiles = new All_Tiles();
@@ -144,11 +143,19 @@ $(function() {
 			return this.template(this.model.toJSON())
 		},
 		tileClick: function() {
-			if (this.model.get("hasBeenSelected") == false) {
+			if (this.model.get("hasBeenSelected") == false &&  Tiles.allowClicks == true) {
 				var player = Tiles.numOfClicks % 2;
-				this.model.set("selectedBy", player);
-				this.model.set("hasBeenSelected", true);
-				Tiles.numOfClicks++;				
+				this.model.save("selectedBy", player, {
+					success: function(a) {
+						console.log(a)
+					}
+				});
+				this.model.save("hasBeenSelected", true);
+				Tiles.numOfClicks++;
+				// this.model.save({
+				// 	selectedBy: player,
+				// 	hasBeenSelected: true
+				// });
 			}
 		},
 		markTile: function() {
@@ -170,11 +177,12 @@ $(function() {
 		el: $("#board"),
 
 		initialize: function(options) {
-			var thisView = this;
-			this.render([], options.size);
+
+			this.listenTo(Tiles, "add", this.hello);
 			this.listenTo(Tiles, "win", this.win);
 			this.listenTo(Tiles, "tie", this.tie);
 			this.listenTo(Tiles, "reset", this.render);
+
 			$("#overlay-bg").on("click", function() {
 				$(this).removeClass("show");
 				$("#message").removeClass("show");
@@ -183,7 +191,20 @@ $(function() {
 				$("#overlay-bg").removeClass("show");
 				$("#message").removeClass("show");
 				Tiles.reset([], 3);
+				Tiles.allowClicks = true;
 			})
+			this.render([], options.size)
+
+			Tiles.fetch({
+				success: function(c) {
+					console.log(c.where({"hasBeenSelected": true}))
+				}
+			});
+			console.log(Tiles.where({"hasBeenSelected": true}))
+
+		},
+		hello: function(um) {
+			console.log(um)
 		},
 		render: function(collection, size) {
 			this.$el.empty();			
@@ -213,9 +234,9 @@ $(function() {
 		}
 	});
 	
-	var size = 3
+	var size = 3;
 
 	var App = new Board_View({
 		size : size
-	});		
+	});
 });
