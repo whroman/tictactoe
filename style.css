@@ -1,5 +1,5 @@
 body {
-	min-width: 550px;
+	min-width: 600px;
 	margin: 0;
 }
 
@@ -12,9 +12,10 @@ body > * {
 
 h1 {
 	font-size: 40px;
-	font-weight: 100;
+	font-weight: 800;
 	margin: 0;
 	line-height: 2em;
+    color: #555;
 }
 
 #page {
@@ -26,6 +27,7 @@ h1 {
 #board {
 	display: inline-block;
 	vertical-align: bottom;
+    margin-bottom: 12px;
 }
 
 .tile {
@@ -58,7 +60,7 @@ h1 {
 }
 
 .tile:hover {
-	border-color: #444;
+	border-color: #555;
 }
 
 #board.one .tile:hover {
@@ -71,7 +73,7 @@ h1 {
 
 #board .tile.one:hover,
 #board .tile.two:hover {
-	border-color: #444;
+	border-color: #555;
 }
 
 .tile.faux:hover {
@@ -88,12 +90,11 @@ h1 {
 	display: inline-block;
 	vertical-align: bottom;
 	margin: 0 40px;
-	width: 470px;
+	width: 520px;
 }
 
 .player {
 	display: inline-block;
-	width: 50%;
 	text-align: center;
 }
 
@@ -102,6 +103,8 @@ h1 {
 	float: left;
 	display: inline-block;
 	margin-left: 10px;
+    color: #555;
+    font-weight: 800;
 }
 
 .player.one {
@@ -177,6 +180,10 @@ h1 {
 }
 
 .new-game:hover * {
-	color: #444;
-	border-color: #444;
+	color: #555;
+	border-color: #555;
+}
+
+.clearfix {
+    width: 100%;
 }
