@@ -1,6 +1,5 @@
 body {
-	text-align: center;
-	min-width: 450px;
+	min-width: 550px;
 	margin: 0;
 }
 
@@ -11,8 +10,22 @@ body > * {
 	font-size: 16px;
 }
 
+h1 {
+	font-size: 40px;
+	font-weight: 100;
+	margin: 0;
+	line-height: 2em;
+}
+
+#page {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
 #board {
 	display: inline-block;
+	vertical-align: bottom;
 }
 
 .tile {
@@ -48,6 +61,19 @@ body > * {
 	border-color: #444;
 }
 
+#board.one .tile:hover {
+	border-color: #21D330;
+}
+
+#board.two .tile:hover {
+	border-color: #FF8822;
+}
+
+#board .tile.one:hover,
+#board .tile.two:hover {
+	border-color: #444;
+}
+
 .tile.faux:hover {
 	cursor: default;
 }
@@ -60,16 +86,30 @@ body > * {
 	clear: both;
 	font-size: 24px;
 	display: inline-block;
+	vertical-align: bottom;
+	margin: 0 40px;
+	width: 470px;
 }
 
 .player {
 	display: inline-block;
-	width: 100%;
+	width: 50%;
 	text-align: center;
 }
 
 .player .name {
 	line-height: 80px;
+	float: left;
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.player.one {
+	float: left;
+}
+
+.player.two {
+	float: right;
 }
 
 #overlay-bg {
@@ -112,7 +152,7 @@ body > * {
 	font-size: 40px;
 }
 
-#message .new-game {
+.new-game {
 	display: inline-block;
 	cursor: pointer;
 }
@@ -124,7 +164,7 @@ body > * {
 	color: #999
 }
 
-.button.tile {
+.button.tile.faux {
 	width: 45px;
 	height: 45px;
 	color: #FFF;
@@ -133,9 +173,10 @@ body > * {
 	font-size: 40px;
 	font-weight: 500;
 	display: inline-block;
+	cursor: pointer;
 }
 
-#message .new-game:hover * {
+.new-game:hover * {
 	color: #444;
 	border-color: #444;
 }
