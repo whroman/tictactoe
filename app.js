@@ -196,6 +196,8 @@ $(function() {
 
 			if (Tiles.length == 0) {
 		    	Tiles.newGame(size);
+                this.$el.addClass("one")
+                this.playerOne.addClass("one")
 		    } else {
 		    	this.persistCollection();
 		    }
